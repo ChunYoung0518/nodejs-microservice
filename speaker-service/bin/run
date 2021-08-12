@@ -39,9 +39,9 @@ server.on('listening', () => {
     process.exit(0);
   });
 
-  setTimeout(() => {
-    throw new Error('Something bad happened');
-  }, 10000);
+  // setTimeout(() => {
+  //   throw new Error('Something bad happened');
+  // }, 10000);
 
   log.info(
     `Hi there! I'm listening on port ${server.address().port} in ${service.get('env')} mode.`,
