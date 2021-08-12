@@ -3,10 +3,8 @@ const semver = require('semver');
 class ServiceRegistry {
   constructor(log) {
     this.log = log;
-    this.services = {
-
-    };
-    this.timeout = 10;
+    this.services = {};
+    this.timeout = 30;
   }
 
   get(name, version) {
@@ -32,13 +30,14 @@ class ServiceRegistry {
       return key;
     }
     this.services[key].timestamp = Math.floor(new Date() / 1000);
-    this.log.debug(`Update service ${name}, version: ${version} at ${ip}:${port}`);
+    this.log.debug(`Updated service ${name}, version: ${version} at ${ip}:${port}`);
     return key;
   }
 
   unregister(name, version, ip, port) {
     const key = name + version + ip + port;
     delete this.services[key];
+    this.log.debug(`Unregistered service ${name}, version: ${version} at ${ip}:${port}`);
     return key;
   }
 
