@@ -2,7 +2,6 @@ const express = require('express');
 const ServiceRegistry = require('./lib/ServiceRegistry');
 
 const service = express();
-// const ServiceRegistry = require('./ServiceRegistry');
 
 module.exports = (config) => {
   const log = config.log();
@@ -37,7 +36,12 @@ module.exports = (config) => {
     return res.json({ result: serviceKey });
   });
 
-  service.get('/register/:servicename/:serviceversion', (req, res, next) => next('Not implemented'));
+  service.get('/register/:servicename/:serviceversion', (req, res) => {
+    const { servicename, serviceversion } = req.params;
+    const ser = serviceRegistry.get(servicename, serviceversion);
+    if (!ser) return res.status(404).json({ result: 'Service not found' });
+    return res.json(ser);
+  });
 
   // eslint-disable-next-line no-unused-vars
   service.use((error, req, res, next) => {
