@@ -12,6 +12,7 @@ class ServiceRegistry {
     const candidates = Object.values(this.services)
       .filter(service => service.name === name && semver.satisfies(service.version, version));
 
+    this.log.debug(`Request service ${name}, version: ${version}`);
     return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
@@ -30,14 +31,14 @@ class ServiceRegistry {
       return key;
     }
     this.services[key].timestamp = Math.floor(new Date() / 1000);
-    this.log.debug(`Updated service ${name}, version: ${version} at ${ip}:${port}`);
+    // this.log.debug(`Updated service ${name}, version: ${version} at ${ip}:${port}`);
     return key;
   }
 
   unregister(name, version, ip, port) {
     const key = name + version + ip + port;
     delete this.services[key];
-    this.log.debug(`Unregistered service ${name}, version: ${version} at ${ip}:${port}`);
+    // this.log.debug(`Unregistered service ${name}, version: ${version} at ${ip}:${port}`);
     return key;
   }
 
