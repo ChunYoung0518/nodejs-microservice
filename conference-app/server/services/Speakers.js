@@ -1,6 +1,10 @@
 /* eslint-disable class-methods-use-this */
 const axios = require('axios');
 
+const CircuitBreaker = require('../lib/CircuitBreaker');
+
+const circuitBreaker = new CircuitBreaker();
+
 class SpeakersService {
   constructor({ serviceRegistryUrl, serviceVersionIdentifier }) {
     this.serviceRegistryUrl = serviceRegistryUrl;
@@ -71,8 +75,7 @@ class SpeakersService {
   }
 
   async callService(requestOptions) {
-    const response = await axios(requestOptions);
-    return response.data;
+    return circuitBreaker.callService(requestOptions);
   }
 
   async getService(servicename) {
