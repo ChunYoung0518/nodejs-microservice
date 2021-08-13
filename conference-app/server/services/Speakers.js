@@ -2,6 +2,10 @@
 const axios = require('axios');
 const url = require('url');
 const crypto = require('crypto');
+const fs = require('fs');
+const util = require('util');
+
+const fsexits = util.promisify(fs.exists);
 
 const CircuitBreaker = require('../lib/CircuitBreaker');
 
@@ -79,8 +83,12 @@ class SpeakersService {
 
   async callService(requestOptions) {
     const servicePath = url.parse(requestOptions.url).path;
-
     const cacheKey = crypto.createHash('md5').update(requestOptions.method + servicePath).digest('hex');
+    let cacheFile = null;
+
+    if (requestOptions.responseType && requestOptions.responseType === 'stream') {
+      cacheFile = `${__dirname}/../../_imagecache/${cacheKey}`;
+    }
 
     const result = await circuitBreaker.callService(requestOptions);
 
@@ -88,10 +96,20 @@ class SpeakersService {
       if (this.cache[cacheKey]) {
         return this.cache[cacheKey];
       }
+      if (cacheFile) {
+        const exists = await fsexits(cacheFile);
+        if (exists) return fs.createReadStream(cacheFile);
+      }
       return false;
     }
 
-    this.cache[cacheKey] = result;
+    if (!cacheFile) {
+      this.cache[cacheKey] = result;
+    } else {
+      const ws = fs.createWriteStream(cacheFile);
+      result.pipe(ws);
+    }
+
     return result;
   }
 

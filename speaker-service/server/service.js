@@ -17,7 +17,8 @@ module.exports = (config) => {
 
   service.use('/images/', express.static(config.data.images));
   if (!config.data.images) {
-    service.use('/images/', express.static('/Users/chunyang/code/nodejs-microservice/speaker-service/data/images'));
+    service.use('/images/',
+      express.static('/Users/chunyang/code/nodejs-microservice/speaker-service/data/images'));
   }
 
   service.get('/list', async (req, res, next) => {
